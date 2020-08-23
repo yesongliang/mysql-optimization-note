@@ -11,13 +11,13 @@
 
   2、各个版本之间的区别及优缺点
 
-  ![服务器特性](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-服务器特性.png)
+  ![image/服务器特性](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-服务器特性.png)
 
-  ![高可用特性](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-高可用特性.png)
+  ![image/高可用特性](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-高可用特性.png)
 
-  ![安全特性](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-安全特性.png)
+  ![image/安全特性](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-安全特性.png)
 
-  ![开发及管理](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-开发及管理.png)
+  ![image/开发及管理](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本对比-开发及管理.png)
 
 - 如何决定是否要队MySQL进行升级？如何进行升级？
 
@@ -113,9 +113,9 @@ MySQL8.0版本主要的新特性
 
   MySQL常用的用户权限
 
-  ![MySQL常用的用户权限1](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用的用户权限1.png)
+  ![image/MySQL常用的用户权限1](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用的用户权限1.png)
 
-  ![MySQL常用的用户权限2](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用的用户权限2.png)
+  ![image/MySQL常用的用户权限2](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用的用户权限2.png)
 
   ```mysql
   #获取当前MySQL版本支持的用户权限命令
@@ -155,12 +155,13 @@ MySQL8.0版本主要的新特性
 
   解决思路：
 
-  ![MySQL数据库账号迁移](D:\myWork\git_study\mysql-optimization-note\image\MySQL数据库账号迁移.png)
+  ![image/MySQL数据库账号迁移](D:\myWork\git_study\mysql-optimization-note\image\MySQL数据库账号迁移.png)
 
   导出用户建立及授权语句
 
   ```shell
   pt-show-grants u=root,p=123456,h=localhost
+  #还可以使用mysqlpump工具导出MySQL用户信息
   ```
 
 ## 服务器配置类问题
@@ -237,11 +238,11 @@ MySQL8.0版本主要的新特性
 
   常用的性能参数：
 
-  ![MySQL常用性能参数1](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用性能参数1.png)
+  ![image/MySQL常用性能参数1](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用性能参数1.png)
 
-  ![MySQL常用性能参数2](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用性能参数2.png)
+  ![image/MySQL常用性能参数2](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用性能参数2.png)
 
-  ![MySQL常用性能参数3](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用性能参数3.png)
+  ![image/MySQL常用性能参数3](D:\myWork\git_study\mysql-optimization-note\image\MySQL常用性能参数3.png)
 
 ## 日志类问题
 
@@ -550,7 +551,7 @@ InnoDB是如何实现事务的？
 
   示例：
 
-  ![Innodb事务实现示例](D:\myWork\git_study\mysql-optimization-note\image\Innodb事务实现示例.png)
+  ![image/Innodb事务实现示例](D:\myWork\git_study\mysql-optimization-note\image\Innodb事务实现示例.png)
 
 Innodb读操作是否会阻塞写操作？
 
@@ -566,7 +567,7 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
 示例：
 
-![Innodb多版本并发控制示例](D:\myWork\git_study\mysql-optimization-note\image\Innodb多版本并发控制示例.png)
+![image/Innodb多版本并发控制示例](D:\myWork\git_study\mysql-optimization-note\image\Innodb多版本并发控制示例.png)
 
 ## MySQL高可用架构类问题
 
@@ -576,11 +577,11 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
   MySQL主从复制的实现原理
 
-  ![MySQL主从复制实现原理](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制实现原理.png)
+  ![image/MySQL主从复制实现原理](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制实现原理.png)
 
-  ![MySQL主从复制原理_异步复制](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制原理_异步复制.png)
+  ![image/MySQL主从复制原理_异步复制](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制原理_异步复制.png)
 
-  ![MySQL主从复制实现原理_半同步复制](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制实现原理_半同步复制.png)
+  ![image/MySQL主从复制实现原理_半同步复制](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制实现原理_半同步复制.png)
 
   2、MySQL主从复制的配置步骤
 
@@ -624,7 +625,7 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
   ​	配置复制链路时，slave可以根据已经同步的事务ID继续自动同步
 
-  ![MySQL两种主从复制方式对比](D:\myWork\git_study\mysql-optimization-note\image\MySQL两种主从复制方式对比.png)
+  ![image/MySQL两种主从复制方式对比](D:\myWork\git_study\mysql-optimization-note\image\MySQL两种主从复制方式对比.png)
 
   两种复制方式如何选择：
 
@@ -648,9 +649,9 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
   2、MMM架构的优缺点及适用场景；（master master mysql）
 
-  ![MMM架构](D:\myWork\git_study\mysql-optimization-note\image\MMM架构.png)
+  ![image/MMM架构](D:\myWork\git_study\mysql-optimization-note\image\MMM架构.png)
 
-  ![MMM架构所需资源](D:\myWork\git_study\mysql-optimization-note\image\MMM架构所需资源.png)
+  ![image/MMM架构所需资源](D:\myWork\git_study\mysql-optimization-note\image\MMM架构所需资源.png)
 
   故障转移步骤：
 
@@ -692,9 +693,9 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
   3、MHA架构的优缺点及适用场景；
 
-  ![MHA架构](D:\myWork\git_study\mysql-optimization-note\image\MHA架构.png)
+  ![image/MHA架构](D:\myWork\git_study\mysql-optimization-note\image\MHA架构.png)
 
-  ![MHA架构所需资源](D:\myWork\git_study\mysql-optimization-note\image\MHA架构所需资源.png)
+  ![image/MHA架构所需资源](D:\myWork\git_study\mysql-optimization-note\image\MHA架构所需资源.png)
 
   故障转移步骤：
 
@@ -736,7 +737,7 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
 - 如何减小主从复制的延迟。
 
-  ![主从复制延迟产生的原因](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制产生延迟的原因.png)
+  ![image/主从复制延迟产生的原因](D:\myWork\git_study\mysql-optimization-note\image\MySQL主从复制产生延迟的原因.png)
 
   1、大事务：数万行的数据更新或对大表的DDL操作
 
@@ -774,13 +775,13 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
   ​	是一种不同于异步复制的多master复制集群
 
-  ​	![MGR复制架构](D:\myWork\git_study\mysql-optimization-note\image\MGR复制架构.png)
+  ​	![image/MGR复制架构](D:\myWork\git_study\mysql-optimization-note\image\MGR复制架构.png)
 
-  ​	![MGR复制实现原理](D:\myWork\git_study\mysql-optimization-note\image\MGR复制实现原理.png)	![MGR单主模式](D:\myWork\git_study\mysql-optimization-note\image\MGR单主模式.png)
+  ​	![image/MGR复制实现原理](D:\myWork\git_study\mysql-optimization-note\image\MGR复制实现原理.png)	![image/MGR单主模式](D:\myWork\git_study\mysql-optimization-note\image\MGR单主模式.png)
 
-  ​	![MGR多主模式](D:\myWork\git_study\mysql-optimization-note\image\MGR多主模式.png)
+  ​	![image/MGR多主模式](D:\myWork\git_study\mysql-optimization-note\image\MGR多主模式.png)
 
-  ​	![MGR机构需要的资源](D:\myWork\git_study\mysql-optimization-note\image\MGR机构需要的资源.png)
+  ​	![image/MGR机构需要的资源](D:\myWork\git_study\mysql-optimization-note\image\MGR机构需要的资源.png)
 
   如何使用MGR复制
 
@@ -834,9 +835,101 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
   ​	分库分表
 
-  ​	![如何解决写负载大的问题](D:\myWork\git_study\mysql-optimization-note\image\如何解决写负载大的问题.png)
+  ​	![image/如何解决写负载大的问题](D:\myWork\git_study\mysql-optimization-note\image\如何解决写负载大的问题.png)
 
 ## 备份恢复类问题
+
+- 在之前的工作中是如何对数据库进行备份的？
+
+  知识点：
+
+  1、备份方式
+
+  ​	逻辑备份：数据库表结构及结果SQL。
+
+  ​	物理备份：直接拷贝MySQL数据文件。（memory存储引擎，这种方式不能备份其数据）
+
+  ​	全量备份：备份全部数据
+
+  ​	增量备份：备份上一次备份后的数据
+
+  ​	差异备份：备份上一次全量备份后的数据
+
+  2、常用的备份工具
+
+  mysqldump：常用的逻辑备份工具，支持全量备份及条件备份；
+
+  优点：
+
+  ​	备份结果为可读的SQL文件，可用于跨版本跨平台恢复数据；
+
+  ​	备份文件的尺寸小于物理备份，便于长时间存储；
+
+  ​	MySQL发行版本自带工具，无需安装第三方软件。
+
+  缺点：
+
+  ​	只能单线程执行备份恢复任务，备份恢复速度较慢；
+
+  ​	为完成一致性备份需要对备份表加锁，容易造成阻塞；
+
+  ​	会对Innodb buffer pool造成污染（经常使用的数据被刷出缓冲池，降低查询效率）
+
+  mysqlpump：多线程逻辑备份工具，mysqldump的增强版；（MySQL5.7引入）
+
+  优点：（mysqldump的优点都有）
+
+  ​	语句同mysqldump高度兼容，学习成本低；
+
+  ​	支持基于库和表的并行备份，可以提高逻辑备份的性能；
+
+  ​	支持使用zlib和lz4算法对备份进行压缩
+
+  缺点：
+
+  ​	基于表进行并行备份，对于大表来说性能较差（一个表只能使用一个线程）
+
+  ​	5.7.11之前版本不支持一致性并行备份
+
+  ​	会队innodb buffer pool造成污染
+
+  xtrabackup：Innodb在线物理备份工具，支持多线程和增量备份；（percona公司提供）
+
+  优点：
+
+  ​	支持Innodb存储引擎的在线热备份，对Innodb缓冲池没有影响；
+
+  ​	支持并行对数据库的全备和增量备份
+
+  ​	备份和恢复效率比逻辑备份高
+
+  缺点：
+
+  ​	做单表恢复时比较复杂
+
+  ​	完整的数据文件拷贝，故备份文件比逻辑备份大
+
+  ​	对跨平台和数据库版本的备份恢复支持不如逻辑备份
+
+- 如何对MySQL进行增量备份和恢复？
+
+  1、逻辑备份+二进制日志（mysqldump+mysqlbinlog）
+
+  2、使用xtrabackup工具（innobackupex命令）
+
+  ​	![image/xtrabackup增量备份命令](D:\myWork\git_study\mysql-optimization-note\image\xtrabackup增量备份命令.png)
+
+  ​	![image/xtrabackup增量备份恢复命令](D:\myWork\git_study\mysql-optimization-note\image\xtrabackup增量备份恢复命令.png)
+
+- 如何对binlog进行备份？
+
+  备份方式：
+
+  ​	利用cp命令进行离线备份（不能复制正在使用的日志文件）
+
+  ​	利用mysqlbinlog命令在线实时备份（MySQL5.6后开始支持）
+
+  ​	![image/mysqlbinlog命令在线实时备份](D:\myWork\git_study\mysql-optimization-note\image\mysqlbinlog命令在线实时备份binlog.png)
 
 ## 管理及监控问题
 
