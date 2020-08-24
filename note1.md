@@ -933,4 +933,258 @@ innodb MVCC（多版本并发控制）的实现方式（使用undo log，redo lo
 
 ## 管理及监控问题
 
+- 说说你都对MySQL进行过哪些监控？
+
+  MySQL常见的监控指标：
+
+  1、性能类指标：
+
+  ​	QPS：数据库每秒钟处理的请求数量；
+
+  ```mysql
+  #获取MySQL自启动以来服务器执行的请求数量
+  show global status like 'Com%';
+  #用sum函数统计,或使用以下语句
+  show global status like 'Queries';
+  #QPS=（Queries2-Queries1）/时间间隔
+  ```
+
+  ​	TPS：数据库每秒钟处理的事务数量；
+
+  ```mysql
+  #获取总数量
+  show global status where Variable_name in ('Com_insert','Com_delete','Com_update');
+  #Tc ≈ Com_insert+Com_delete+Com_update
+  #TPS ≈ (Tc2-Tc1)/时间间隔
+  ```
+
+  ​	并发数：数据库实例当前并行处理的会话数量；
+
+  ```mysql
+  #查看数据库当前的并发线程数
+  show global status like 'Threads_running';
+  ```
+
+  ​	连接数：连接到数据库会话的数量；
+
+  ```mysql
+  #查看数据库当前的连接线程数量
+  show global status like 'Threads_connected';
+  #报警阀值：Threads_connected/max_connections > 0.8
+  ```
+
+  ​	缓存命中率：innodb的缓存命中率；
+
+  ```mysql
+  #读取数据的次数
+  show global status like 'Innodb_buffer_pool_red_requests';
+  #从物理磁盘读取的次数
+  show global status like 'Innodb_buffer_pool_reads';
+  #命中率了计算公式：
+  #(Innodb_buffer_pool_red_requests-Innodb_buffer_pool_reads)/Innodb_buffer_pool_red_requests*100%
+  #繁忙系统中，命中率一般要求不小于95%
+  ```
+
+  2、功能类指标：
+
+  ​	可用性：数据库是否可正常对外提供服务；
+
+  ```shell
+  #1、周期性连接到数据库服务器并执行SQL测试(select @@version)
+  #2、使用以下命令测试
+  mysqladmin -uxxx -pxxx -hxxx ping
+  ```
+
+  ​	阻塞：当前是否有阻塞的会话；（一个事务锁住了其他事务所需的资源）
+
+  ```mysql
+  #version<5.7,在information_schema库中运行
+  select b.trx_mysql_thread_id as '被阻塞线程',b.trx_query as '被阻塞SQL',c.trx_mysql_thread_id '阻塞线程',c.trx_query as '阻塞SQL',(unix_timestamp()-unix_timestamp(c.trx_started)) as '阻塞时间' from innodb_lock_waits a join innodb_trx b on a.requesting_trx_id=b.trx_id join innodb_trx c on a.blocking_trx_id=c.trx_id where (unix_timestamp()-unix_timestamp(c.trx_started))>30;
+  #version>=5.7，在sys库中运行
+  select waiting_pid as '被阻塞线程',waiting_query as '被阻塞SQL',blocking_pid as '阻塞线程',blocking_query as '阻塞SQL',wait_age as '阻塞时间',sql_kill_blocking_query as '建议操作' from innodb_lock_waits where (unix_timestamp()-unix_timestamp(wait_started))>30;
+  ```
+
+  ​	死锁：当前事务是否产生了死锁；（事务相互锁住了对方所需的资源）
+
+  ```shell
+  #查看最近一次死锁的信息
+  #show engine innodb status;
+  #1、使用pt工具
+  pt-deadlock-logger u=root,p=123456,h=127.0.0.1 --create-dest-table -dest u=root,p=123456,h=127.0.0.1,D=crn,t=deadlock
+  #2、使用MySQL错误日志，开启记录死锁信息
+  # set global innodb_print_all_deadlocks=on;
+  ```
+
+  ​	慢查询：实时慢查询监控
+
+  ```mysql
+  #1、通过慢查询日志监控
+  #2、通过information_schema.`PROCESSLIST`表实时监控，以下为示例
+  select * from PROCESSLIST where time>60 and command<>'sleep';
+  ```
+
+  ​	主从延迟：数据库主从延迟时间；
+
+  ```mysql
+  #1、使用以下命令，查看Seconds_Behind_Master的值；
+  show slave status;
+  #2、master上启动一个线程周期性更新监控表的数据，slave上启动一个线程查询监控表的数据算出延迟（可写程序实现或用pt工具）,以下为shell命令：
+  pt-heartbeat --user=xx -password=xx -h master --create-table --database xxx --update --daemonize --interval=1;
+  
+  pt-heartbeat --user=xx -password=xx -h slave --database xxx --monitor --daemonize --log /tmp/slave_lag.log;
+  ```
+
+  ​	主从状态：数据库主从复制链路是否正常；
+
+  ```mysql
+  #1、使用以下命令，查看Slave_IO_Running和Slave_SQL_Running的值；
+  show slave status;
+  ```
+
+- 这些监控是如何实现的？
+
+  
+
 ## 优化及异常处理
+
+- 请例举三个你曾经处理过的让你印象深刻的问题。
+
+  1、数据库服务器负载过大的问题
+
+  可能原因：
+
+  ​	1）、服务器磁盘IO超负载
+
+  ​	2）、存在大量阻塞线程
+
+  ​	3）、存在大量并发慢查询
+
+  ​	4）、存在其他占用CPU的服务
+
+  ​	5）、服务器硬件资源故障
+
+  排查思路：
+
+  ![image/MySQL负载高_排查思路](D:\myWork\git_study\mysql-optimization-note\image\MySQL负载高_排查思路.png)
+
+  2、慢查询造成的磁盘IO爆表
+
+  可能原因：
+
+  ​	1）、MySQL输出大量日志
+
+  ​	2）、MySQL正在进行大批量写
+
+  ​	3）、慢查询产生了大量的磁盘临时表
+
+  解决思路：
+
+  ​	优化慢查询，减少使用磁盘临时表
+
+  ​	增加tmp_table_size和max_heap_table_size参数的大小（会造成大量的内存消耗）
+
+  3、主从数据库不一致
+
+  现象：
+
+  ​	主从数据延迟为0；
+
+  ​	IO_THREAD和SQL_THREAD状态为YES
+
+  ​	相同查询在主从服务器中查询结果不一致（checksum table table_name获取的值不一致）
+
+  可能原因：
+
+  ​	1）、对从服务器进行了写操作
+
+  ​	2）、使用sql_slave_skip_counter或注入空事务的方式修复错误
+
+  ​	3）、使用了statement格式的复制
+
+  解决思路：
+
+  ​	设置read_only=on
+
+  ​	设置super_read_only=on
+
+  ​	使用row格式的复制
+
+  ​	使用pt_table_sync修复数据
+
+  ```shell
+  pt-table-sync --execute --charset=utf8 --database=stock --table=stock --sync-to-master h=172.16.188.99,u=root,p=123456
+  ```
+
+- 处理过哪些MySQL主从复制异常？
+
+  1、主服务器连接不上
+
+  排查思路：
+
+  ​	1、主从服务间网络是否通畅；（ping）
+
+  ​	2、是否存在防火墙，过滤了数据库端口；（telnet）
+
+  ​	3、复制链路配置的用户名和密码是否正确，是否有相应权限。
+
+  2、主键冲突问题
+
+  可能原因：
+
+  ​	1）、人为操作了slave数据库中的数据；
+
+  ​	2）、slave服务器出现过宕机；（relay_log默认存放在文件中，重复执行relay_log）
+
+  解决思路：
+
+  ​	跳过故障数据，检查主从数据一直性（使用pt-table-checksum工具）
+
+  ​	直接删除从库主键冲突数据
+
+  3、数据行不存在
+
+  可能原因：
+
+  ​	1）、人为操作了slave数据库中的数据；
+
+  ​	2）、使用sql_slave_skip_counter或注入空事务的方式修复错误；
+
+  解决思路：
+
+  ​	跳过故障数据
+
+  ​	使用pt_table_sync修复数据
+
+  4、relay_log损坏
+
+  解决思路：
+
+  ​	1）、找到已经正确同步的日志点；（show slave status）
+
+  ​	2）、使用reset slave 删除relay_log
+
+  ​	3)、在正确同步日志点后重新同步日志（change_master）
+
+- 你会从哪些方面对MySQL数据库进行优化？
+
+![image/优化思路](D:\myWork\git_study\mysql-optimization-note\image\优化思路.png)
+
+## 总结
+
+![image/MySQL版本类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL版本类问题.png)
+
+![image/MySQL用户类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL用户类问题.png)
+
+![image/MySQL配置类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL配置类问题.png)
+
+![image/MySQL日志类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL日志类问题.png)
+
+![image/MySQL存储引擎类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL存储引擎类问题.png)
+
+![image/MySQL架构类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL架构类问题.png)
+
+![image/MySQL备份恢复类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL备份恢复类问题.png)
+
+![image/MySQL监控及管理类问题](D:\myWork\git_study\mysql-optimization-note\image\MySQL监控及管理类问题.png)
+
+![image/MySQL常见问题处理](D:\myWork\git_study\mysql-optimization-note\image\MySQL常见问题处理.png)
